@@ -13,3 +13,4 @@ const storage = multer.diskStorage({
 export const upload = multer({ 
     storage,
 })
+// multer is the middleware for  uploading the files 
