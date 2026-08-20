@@ -1,24 +1,44 @@
-import cloudinary from "cloudinary"
-import fs from "fs"
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
 
- cloudinary.config({ 
-        cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-        api_key:process.env.CLOUDINARY_API_KEY, 
-        api_secret: process.env.CLOUDINARY_API_SECRET 
-    })
-const uploadCloudinary=async(LocalFilePath)=>{
-    try {
-        if(!LocalFilePath) return null 
-       const response = await cloudinary.uploader.upload(LocalFilePath,{
-            resource_type:"auto"
-        })
-        // file has succesfully uploaded
-        console.log("file is uploaded succesfully on cloudinary",response.url);
-        return response;
-    } catch (error) {
-            fs.unlinkSync(localFilePath) // remove the locally saved temporary file as the upload operation got failed
-        return null;
+function validateEnv() {
+    const required = ["CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"];
+    const missing = required.filter(key => !process.env[key]);
+    if (missing.length) {
+        console.error("Missing Cloudinary configuration:", missing.join(", "));
+        return false;
     }
+    return true;
 }
 
-export {uploadCloudinary}
+// Config is intentionally removed from here. 
+// It will be lazily loaded inside the upload function to ensure dotenv is fully loaded.
+
+const uploadOnCloudinary = async (localFilePath) => {
+    if (!validateEnv()) {
+        return null;
+    }
+
+    cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+
+    try {
+        if (!localFilePath) return null;
+        const response = await cloudinary.uploader.upload(localFilePath, {
+            resource_type: "auto",
+        });
+        fs.unlinkSync(localFilePath);
+        return response;
+    } catch (error) {
+        console.error("Cloudinary upload error:", error);
+        try {
+            fs.unlinkSync(localFilePath);
+        } catch (_) {}
+        return null;
+    }
+};
+
+export { uploadOnCloudinary };

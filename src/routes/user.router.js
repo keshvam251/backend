@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { RegisterUser } from "../controllers/user.controller.js";
+import { RegisterUser,loginUser,logoutUser } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router =Router()
 
 router.route("/register").post(             //middelware injection 
@@ -10,7 +11,7 @@ router.route("/register").post(             //middelware injection
             maxCount:1
         },
         {
-            name:"cover image",
+            name:"coverImage",
             maxCount:1
         }
     ]),                      
@@ -18,6 +19,8 @@ router.route("/register").post(             //middelware injection
 )                                           
 
 
-// https://localgost:8000/api/v1/users/resiter
+router.route("/login").post(loginUser)
 
+// secured Users 
+router.route("/logout").post(verifyJWT,logoutUser)
 export default router
