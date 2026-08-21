@@ -29,7 +29,7 @@ router.route("/current-user").post(verifyJWT,getCurrentUser)
 router.route("/current-user").post(verifyJWT,getCurrentUser)
 router.route("/update-details").patch(verifyJWT,updateAccountDetails)
 router.route("/avatar").patch(verifyJWT,upload.single("avatar"),updateAccountAvatar)
-router.route("/cover-image").patch(verifyJWT,upload.single("/coverImage"),updateAccountCoverImage)
+router.route("/cover-image").patch(verifyJWT,upload.single("coverImage"),updateAccountCoverImage)
 router.route("/c/:username").get(verifyJWT,getUserDetails)
 //we have used params thatswhy we add the : here 
 router.route("/history").get(verifyJWT,getWatchHistory)
