@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { RegisterUser,loginUser,logoutUser,refreshAccessToken } from "../controllers/user.controller.js";
+import { RegisterUser,changeCurrentPassword,getCurrentUser,getUserDetails,getWatchHistory,loginUser,logoutUser,refreshAccessToken, updateAccountAvatar, updateAccountCoverImage, updateAccountDetails } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router =Router()
@@ -24,4 +24,13 @@ router.route("/login").post(loginUser)
 // secured Users 
 router.route("/logout").post(verifyJWT,logoutUser)
 router.route("/refresh-token").post(refreshAccessToken)
+router.route("/change-password").post(verifyJWT,changeCurrentPassword)
+router.route("/current-user").post(verifyJWT,getCurrentUser)
+router.route("/current-user").post(verifyJWT,getCurrentUser)
+router.route("/update-details").patch(verifyJWT,updateAccountDetails)
+router.route("/avatar").patch(verifyJWT,upload.single("avatar"),updateAccountAvatar)
+router.route("/cover-image").patch(verifyJWT,upload.single("/coverImage"),updateAccountCoverImage)
+router.route("/c/:username").get(verifyJWT,getUserDetails)
+//we have used params thatswhy we add the : here 
+router.route("/history").get(verifyJWT,getWatchHistory)
 export default router
